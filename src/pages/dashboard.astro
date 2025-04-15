@@ -1,0 +1,59 @@
+---
+// Importamos el cliente de Supabase
+import Layout from '../layouts/Layout.astro'
+import { supabase } from '../lib/supabaseClient'
+import { getArquetipoPorDia } from '../lib/getArquetipo'
+
+// 1. Función para calcular el día del ciclo (hoy - fechaInicio)
+function calcularDiaCiclo(fechaInicio: Date): number {
+  const hoy = new Date()
+  const diffTime = hoy.getTime() - fechaInicio.getTime()
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) // milisegundos a días
+  return ((diffDays % 28) + 1) // Día del 1 al 28
+}
+
+// 2. Simulamos una fecha de inicio fija (puedes cambiarla o hacerla configurable)
+const fechaInicio = new Date('2025-04-08')
+const diaCiclo = calcularDiaCiclo(fechaInicio)
+const arquetipo = await getArquetipoPorDia(diaCiclo)
+---
+
+<Layout><html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mujer Arquetipo</title>
+  </head>
+  <body class="p-6 text-xl text-center">
+    <script type="module">
+  import { supabase } from '/src/lib/supabaseClient.ts'
+
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user
+
+  if (user) {
+    const { data: perfil } = await supabase
+      .from('perfiles')
+      .select('fecha_inicio')
+      .eq('id', user.id)
+      .single()
+
+    if (!perfil?.fecha_inicio) {
+      window.location.href = '/setup'
+    }
+  }
+</script>
+
+    <h1 class="text-pink-700 font-bold">¡Sesión iniciada!</h1>
+    <p>Estás en el día <strong>{diaCiclo}</strong> de tu ciclo.</p>
+
+    {arquetipo ? (
+      <>
+        <h2><strong>Arquetipo: {arquetipo.nombre}</strong></h2>
+        <p>{arquetipo.descripcion}</p>
+      </>
+    ) : (
+      <p>No se encontró un arquetipo para este día.</p>
+    )}
+  </body>
+</html>
+</Layout>

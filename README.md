@@ -1,48 +1,133 @@
-# Astro Starter Kit: Basics
+# 🌸 Mujer Arquetipo
 
-```sh
-npm create astro@latest -- --template basics
+Bienvenida a **Mujer Arquetipo**, una aplicación desarrollada con Astro, TailwindCSS y Supabase que acompaña el ciclo femenino en un recorrido de 28 días con arquetipos inspiradores cada lunes.
+
+---
+
+## 🚀 Tecnologías utilizadas
+
+- ⚡️ [Astro](https://astro.build/) — Framework moderno orientado a performance
+- 🎨 [TailwindCSS](https://tailwindcss.com/) — Utilidades CSS para una UI elegante
+- 🧠 [Supabase](https://supabase.com/) — Backend-as-a-Service (Auth + DB)
+- 📨 Magic Link Authentication
+- 📦 RLS (Row Level Security) en Supabase para proteger los datos
+
+---
+
+## 📁 Estructura del proyecto
+
+```
+.
+├── src
+│   ├── layouts
+│   │   └── Layout.astro         # Layout base estilizado
+│   ├── pages
+│   │   ├── index.astro          # Página de bienvenida
+│   │   ├── setup.astro          # Formulario para configurar fecha de inicio
+│   │   ├── dashboard.astro      # Calcula y muestra el arquetipo actual
+│   │   └── login.astro          # Login con magic link
+│   ├── lib
+│   │   └── supabaseClient.ts    # Cliente de Supabase
+│   └── styles
+│       └── global.css           # Estilos globales
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+---
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 🔐 Supabase Auth + RLS
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+Se utiliza autenticación mediante **enlace mágico** (Magic Link).
 
-## 🚀 Project Structure
+### 🧱 Tabla `perfiles`
 
-Inside of your Astro project, you'll see the following folders and files:
+| Columna        | Tipo   | Descripción                  |
+| -------------- | ------ | ---------------------------- |
+| `id`           | `uuid` | ID del usuario (auth.uid)    |
+| `fecha_inicio` | `date` | Fecha elegida por la usuaria |
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+### ✅ Políticas RLS implementadas
+
+```sql
+-- SELECT
+auth.uid() = id
+
+-- INSERT
+auth.uid() = id
+WITH CHECK (auth.uid() = id)
+
+-- UPDATE
+auth.uid() = id
+WITH CHECK (auth.uid() = id)
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+---
 
-## 🧞 Commands
+## 🧠 Cálculo del día del ciclo
 
-All commands are run from the root of the project, from a terminal:
+Se calcula automáticamente al iniciar sesión en base a la fecha guardada:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```ts
+function calcularDiaCiclo(fechaInicio: Date): number {
+  const hoy = new Date();
+  const diffTime = hoy.getTime() - fechaInicio.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return (diffDays % 28) + 1;
+}
+```
 
-## 👀 Want to learn more?
+---
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## ✨ UI/UX moderno
+
+- Tipografía `Outfit` desde Google Fonts
+- Layout responsivo con Tailwind
+- Botones redondeados, colores suaves y accesibilidad
+- Scroll suave (`scroll-behavior: smooth`)
+
+### Página principal (`index.astro`)
+
+- Texto introductorio
+- Botones: _Configurar ciclo_ y _Ir al dashboard_
+
+### Página de setup
+
+- Selector de fecha (`<input type="date">`)
+- Guarda automáticamente la fecha en Supabase
+- Redirecciona a `/dashboard`
+
+---
+
+## 📆 Arquetipos
+
+Los arquetipos se almacenan en la tabla `arquetipo` con 28 registros, uno por día.
+
+| Columna       | Tipo     | Descripción             |
+| ------------- | -------- | ----------------------- |
+| `dia_lunes`   | `number` | Día del ciclo (1–28)    |
+| `nombre`      | `text`   | Nombre del arquetipo    |
+| `descripcion` | `text`   | Descripción inspiradora |
+
+---
+
+## 🧪 Próximos pasos
+
+- [ ] Añadir ilustraciones por arquetipo
+- [ ] Calendario visual de progreso
+- [ ] Guardar notas personales por día
+- [ ] Compartir arquetipos en redes sociales
+
+---
+
+## 🧘‍♀️ Contribuye
+
+Este proyecto está en desarrollo. Si quieres sumar ideas, feedback o mejoras en código, ¡bienvenida! ✨
+
+---
+
+## 💖 Créditos
+
+Creado con ❤️ para acompañar a las mujeres en su conexión cíclica.
+
+---
+
+> “El ciclo menstrual no es solo biología, es una guía para reconectar con nuestra sabiduría interior.”
