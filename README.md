@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/mujer-arquetipo.png" alt="Mujer Arquetipo" width="600" />
+  <img src="public/mujer-arquetipo.png" alt="Mujer Arquetipo" width="600" />
 </p>
 
 # 🌸 Mujer Arquetipo
