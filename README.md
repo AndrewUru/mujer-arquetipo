@@ -1,8 +1,10 @@
+<p align="center">
+  <img src="/mujer-arquetipo.png" alt="Mujer Arquetipo" width="600" />
+</p>
+
 # 🌸 Mujer Arquetipo
 
-Bienvenida a **Mujer Arquetipo**, una aplicación desarrollada con Astro, TailwindCSS y Supabase que acompaña el ciclo femenino en un recorrido de 28 días con arquetipos inspiradores cada lunes.
-
-![Mujer Arquetipo](/mujer-arquetipo.png)
+Bienvenida a **_Mujer Arquetipo_**, una aplicación desarrollada con Astro, TailwindCSS y Supabase que acompaña el ciclo femenino en un recorrido de **28 días** con arquetipos inspiradores cada lunes.
 
 ---
 
