@@ -1,14 +1,16 @@
 <p align="center">
-  <img src="public/mujer-arquetipo.png" alt="Mujer Arquetipo" width="600" />
+  <img src="public/mujer_chakana.webp" alt="Mujer Chakana" width="600" />
 </p>
 
-# 🌸 Mujer Arquetipo
+# 🌺 Mujer Chakana
 
-Bienvenida a **_Mujer Arquetipo_**, una aplicación desarrollada con Astro, TailwindCSS y Supabase que acompaña el ciclo femenino en un recorrido de **28 días** con arquetipos inspiradores cada lunes.
+Bienvenida a **_Mujer Chakana_**, una aplicación desarrollada con Astro, TailwindCSS y Supabase que acompaña el ciclo femenino en un recorrido simbólico de **28 días**, guiado por arquetipos femeninos inspirados en la **Chakana** y la cosmovisión andina.
+
+Un proyecto que une tecnología, espiritualidad y memoria ancestral para reconectar con los saberes del cuerpo y la tierra.
 
 ---
 
-## 🚀 Tecnologías utilizadas
+## ✨ Tecnologías utilizadas
 
 - ⚡️ [Astro](https://astro.build/) — Framework moderno orientado a performance
 - 🎨 [TailwindCSS](https://tailwindcss.com/) — Utilidades CSS para una UI elegante
@@ -41,6 +43,14 @@ Bienvenida a **_Mujer Arquetipo_**, una aplicación desarrollada con Astro, Tail
 ## 🔐 Supabase Auth + RLS
 
 Se utiliza autenticación mediante **enlace mágico** (Magic Link).
+
+### 🧱 Tabla `arquetipo`
+
+| Columna       | Tipo     | Descripción           |
+| ------------- | -------- | --------------------- |
+| `dia_lunes`   | `number` | Día del ciclo (1–28)  |
+| `nombre`      | `text`   | Nombre del arquetipo  |
+| `descripcion` | `text`   | Descripción simbólica |
 
 ### 🧱 Tabla `perfiles`
 
@@ -90,7 +100,7 @@ function calcularDiaCiclo(fechaInicio: Date): number {
 
 ### Página principal (`index.astro`)
 
-- Texto introductorio
+- Texto introductorio con sentido simbólico
 - Botones: _Configurar ciclo_ y _Ir al dashboard_
 
 ### Página de setup
@@ -101,15 +111,18 @@ function calcularDiaCiclo(fechaInicio: Date): number {
 
 ---
 
-## 📆 Arquetipos
+## 🗖️ Arquetipos Chakana
 
-Los arquetipos se almacenan en la tabla `arquetipo` con 28 registros, uno por día.
+Los arquetipos se alinean con los **28 días del ciclo lunar/femenino**, acompañando con energía, guía y simbolismo.
 
-| Columna       | Tipo     | Descripción             |
-| ------------- | -------- | ----------------------- |
-| `dia_lunes`   | `number` | Día del ciclo (1–28)    |
-| `nombre`      | `text`   | Nombre del arquetipo    |
-| `descripcion` | `text`   | Descripción inspiradora |
+| Día del ciclo | Arquetipo     | Energía guía                                 |
+| ------------- | ------------- | -------------------------------------------- |
+| 1             | La Visionaria | Intuición, claridad y dirección interna      |
+| 8             | La Curandera  | Sanación, sabiduría ancestral, medicina viva |
+| 15            | La Guerrera   | Fuerza, valentía, protección del territorio  |
+| 22            | La Madre      | Nutrición, cuidado, visión amorosa           |
+
+(Puedes ampliar la tabla con los 28 registros)
 
 ---
 
@@ -119,19 +132,20 @@ Los arquetipos se almacenan en la tabla `arquetipo` con 28 registros, uno por d�
 - [ ] Calendario visual de progreso
 - [ ] Guardar notas personales por día
 - [ ] Compartir arquetipos en redes sociales
+- [ ] Incorporar audio-meditaciones por arquetipo
 
 ---
 
 ## 🧘‍♀️ Contribuye
 
-Este proyecto está en desarrollo. Si quieres sumar ideas, feedback o mejoras en código, ¡bienvenida! ✨
+Este proyecto está en evolución. Si quieres sumar tus ideas, arte, visión espiritual o mejoras en código, ¡eres muy bienvenida! 🌈
 
 ---
 
 ## 💖 Créditos
 
-Creado con ❤️ para acompañar a las mujeres en su conexión cíclica.
+Creado con ❤️ para acompañar a mujeres y cuerpas cíclicas en su conexión profunda con la sabiduría ancestral.
 
 ---
 
-> “El ciclo menstrual no es solo biología, es una guía para reconectar con nuestra sabiduría interior.”
+> “La Chakana nos recuerda que somos puente entre mundos, y que el camino espiritual comienza en nosotras.” — Mujer Chakana
