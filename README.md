@@ -2,21 +2,59 @@
   <img src="public/mujer_chakana.webp" alt="Mujer Chakana" width="600" />
 </p>
 
-# 🌺 Mujer Chakana
+# 🎺 Mujer Chakana
 
-Bienvenida a **_Mujer Chakana_**, una aplicación desarrollada con Astro, TailwindCSS y Supabase que acompaña el ciclo femenino en un recorrido simbólico de **28 días**, guiado por arquetipos femeninos inspirados en la **Chakana** y la cosmovisión andina.
+Bienvenida a **_Mujer Chakana_**, una aplicación desarrollada con Astro, TailwindCSS, Supabase y React que acompaña el ciclo femenino en un recorrido simbólico de **28 días**, guiado por arquetipos femeninos inspirados en la **Chakana** y la cosmovisión andina.
 
-Un proyecto que une tecnología, espiritualidad y memoria ancestral para reconectar con los saberes del cuerpo y la tierra.
+Este es un proyecto que une **tecnología, espiritualidad y memoria ancestral** para reconectar con los saberes del cuerpo y la tierra.
 
 ---
 
 ## ✨ Tecnologías utilizadas
 
 - ⚡️ [Astro](https://astro.build/) — Framework moderno orientado a performance
-- 🎨 [TailwindCSS](https://tailwindcss.com/) — Utilidades CSS para una UI elegante
-- 🧠 [Supabase](https://supabase.com/) — Backend-as-a-Service (Auth + DB)
-- 📨 Magic Link Authentication
-- 📦 RLS (Row Level Security) en Supabase para proteger los datos
+- 🎨 [TailwindCSS](https://tailwindcss.com/) — Utilidades CSS para UI fluida
+- 🌈 [React](https://react.dev/) — Componentes dinámicos con interactividad
+- 🔐 [Supabase](https://supabase.com/) — Auth + Base de datos Postgres
+- 📧 Autenticación mágica (Magic Link) y opcional por contraseña
+- 🧠 RLS (Row Level Security) para proteger los datos de cada usuaria
+- ☁️ [Vercel](https://vercel.com/) — Hosting optimizado para Astro
+
+---
+
+## 🚀 Cómo desplegar en Vercel
+
+1. Clona este repositorio:
+
+   ```bash
+   git clone https://github.com/AndrewUru/mujer-chakana
+   cd mujer-chakana
+   ```
+
+2. Instala dependencias:
+
+   ```bash
+   npm install
+   ```
+
+3. Conecta tu proyecto a [Vercel](https://vercel.com) y agrega estas variables en el panel:
+
+| Variable                   | Valor                |
+| -------------------------- | -------------------- |
+| `PUBLIC_SUPABASE_URL`      | (tu URL de Supabase) |
+| `PUBLIC_SUPABASE_ANON_KEY` | (tu clave pública)   |
+
+4. Asegúrate de tener este adaptador en `astro.config.mjs`:
+
+```ts
+import vercel from "@astrojs/vercel/serverless";
+
+export default defineConfig({
+  adapter: vercel(),
+});
+```
+
+5. ¡Listo! Deploy automático desde Git.
 
 ---
 
@@ -25,127 +63,119 @@ Un proyecto que une tecnología, espiritualidad y memoria ancestral para reconec
 ```
 .
 ├── src
-│   ├── layouts
-│   │   └── Layout.astro         # Layout base estilizado
+│   ├── components             # Navbar, botones, react hooks
+│   ├── layouts                # Layout base estilizado
 │   ├── pages
-│   │   ├── index.astro          # Página de bienvenida
-│   │   ├── setup.astro          # Formulario para configurar fecha de inicio
-│   │   ├── dashboard.astro      # Calcula y muestra el arquetipo actual
-│   │   └── login.astro          # Login con magic link
+│   │   ├── index.astro        # Página de bienvenida
+│   │   ├── setup.astro        # Configura el ciclo menstrual
+│   │   ├── dashboard.astro    # Muestra el arquetipo actual
+│   │   └── login.astro        # Login (Magic Link / Password)
 │   ├── lib
-│   │   └── supabaseClient.ts    # Cliente de Supabase
+│   │   └── supabaseClient.ts  # Cliente de Supabase
 │   └── styles
-│       └── global.css           # Estilos globales
+│       └── global.css         # Estilos generales
 ```
 
 ---
 
 ## 🔐 Supabase Auth + RLS
 
-Se utiliza autenticación mediante **enlace mágico** (Magic Link).
+La app utiliza autenticación con **Magic Link**, pero puedes añadir opción por contraseña si quieres monetizar o tener mayor control.
 
-### 🧱 Tabla `arquetipo`
+### Tablas principales
 
-| Columna       | Tipo     | Descripción           |
-| ------------- | -------- | --------------------- |
-| `dia_lunes`   | `number` | Día del ciclo (1–28)  |
-| `nombre`      | `text`   | Nombre del arquetipo  |
-| `descripcion` | `text`   | Descripción simbólica |
+#### `ciclo_semanal_mujer_chakana`
 
-### 🧱 Tabla `perfiles`
+| Columna       | Tipo   | Descripción                      |
+| ------------- | ------ | -------------------------------- |
+| `dia_ciclo`   | `int`  | Día 1 al 28                      |
+| `arquetipo`   | `text` | Nombre simbólico (La Madre, etc) |
+| `descripcion` | `text` | Guía espiritual de ese día       |
+| `elemento`    | `text` | Fuego, Agua, Tierra, Aire        |
+| `audio_url`   | `text` | Link a audio del día             |
+| `ritual_pdf`  | `text` | PDF con práctica ritual          |
+| `tip_extra`   | `text` | Acción o sugerencia diaria       |
 
-| Columna        | Tipo   | Descripción                  |
-| -------------- | ------ | ---------------------------- |
-| `id`           | `uuid` | ID del usuario (auth.uid)    |
-| `fecha_inicio` | `date` | Fecha elegida por la usuaria |
+#### `perfiles`
 
-### ✅ Políticas RLS implementadas
+| Columna        | Tipo   | Descripción                      |
+| -------------- | ------ | -------------------------------- |
+| `id`           | `uuid` | auth.uid()                       |
+| `fecha_inicio` | `date` | Día 1 del ciclo según la usuaria |
+
+#### RLS policies
 
 ```sql
--- SELECT
-auth.uid() = id
-
--- INSERT
-auth.uid() = id
-WITH CHECK (auth.uid() = id)
-
--- UPDATE
+-- SELECT, INSERT, UPDATE
 auth.uid() = id
 WITH CHECK (auth.uid() = id)
 ```
 
 ---
 
-## 🧠 Cálculo del día del ciclo
-
-Se calcula automáticamente al iniciar sesión en base a la fecha guardada:
+## 🔄 Lógica del ciclo
 
 ```ts
-function calcularDiaCiclo(fechaInicio: Date): number {
-  const hoy = new Date();
-  const diffTime = hoy.getTime() - fechaInicio.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  return (diffDays % 28) + 1;
-}
+const diffDays = Math.floor(
+  (new Date().getTime() - new Date(fecha_inicio).getTime()) /
+    (1000 * 60 * 60 * 24)
+);
+const diaCiclo = (diffDays % 28) + 1;
 ```
 
 ---
 
-## ✨ UI/UX moderno
+## ✨ UI/UX & diseño
 
+- Layout inspirado en la **Chakana**
+- Responsive y accesible
+- Navbar móvil tipo app
+- Colores suaves: rosados, lilas, blancos
+- Íconos de `lucide-react` (React icons elegantes)
 - Tipografía `Outfit` desde Google Fonts
-- Layout responsivo con Tailwind
-- Botones redondeados, colores suaves y accesibilidad
-- Scroll suave (`scroll-behavior: smooth`)
-
-### Página principal (`index.astro`)
-
-- Texto introductorio con sentido simbólico
-- Botones: _Configurar ciclo_ y _Ir al dashboard_
-
-### Página de setup
-
-- Selector de fecha (`<input type="date">`)
-- Guarda automáticamente la fecha en Supabase
-- Redirecciona a `/dashboard`
 
 ---
 
-## 🗖️ Arquetipos Chakana
+## 🌕 Arquetipos Chakana
 
-Los arquetipos se alinean con los **28 días del ciclo lunar/femenino**, acompañando con energía, guía y simbolismo.
+| Día | Arquetipo     | Simbolismo                            |
+| --- | ------------- | ------------------------------------- |
+| 1   | La Visionaria | Intuición, claridad interior          |
+| 2   | La Sanadora   | Compasión, emociones, cuidado del ser |
+| 8   | La Curandera  | Medicina ancestral, hierbas, tierra   |
+| 15  | La Guerrera   | Protección, fuerza, coraje            |
+| 22  | La Madre      | Nutrición, guía, amor incondicional   |
 
-| Día del ciclo | Arquetipo     | Energía guía                                 |
-| ------------- | ------------- | -------------------------------------------- |
-| 1             | La Visionaria | Intuición, claridad y dirección interna      |
-| 8             | La Curandera  | Sanación, sabiduría ancestral, medicina viva |
-| 15            | La Guerrera   | Fuerza, valentía, protección del territorio  |
-| 22            | La Madre      | Nutrición, cuidado, visión amorosa           |
-
-(Puedes ampliar la tabla con los 28 registros)
-
----
-
-## 🧪 Próximos pasos
-
-- [ ] Añadir ilustraciones por arquetipo
-- [ ] Calendario visual de progreso
-- [ ] Guardar notas personales por día
-- [ ] Compartir arquetipos en redes sociales
-- [ ] Incorporar audio-meditaciones por arquetipo
+> Incluye 28 arquetipos, uno por cada día del ciclo 🎺
 
 ---
 
-## 🧘‍♀️ Contribuye
+## 💡 Roadmap
 
-Este proyecto está en evolución. Si quieres sumar tus ideas, arte, visión espiritual o mejoras en código, ¡eres muy bienvenida! 🌈
+- [x] Selector de fecha para ciclo
+- [x] Cálculo automático del día
+- [x] Dashboard con arquetipo diario
+- [x] Audio y ritual por día
+- [ ] Guardado de notas personales
+- [ ] Calendario circular visual
+- [ ] Ilustraciones y símbolos andinos
+- [ ] Integración con redes o journaling
+
+---
+
+## 🙌 Contribuye
+
+¿Te vibra este camino?  
+Puedes sumar como desarrolladora, diseñadora, artista o simplemente amante de los saberes cíclicos 🌛  
+¡Envía un PR, idea o mensaje!
 
 ---
 
 ## 💖 Créditos
 
-Creado con ❤️ para acompañar a mujeres y cuerpas cíclicas en su conexión profunda con la sabiduría ancestral.
+Creado con 💗 por [@andrewuru](https://github.com/AndrewUru)  
+Inspirado por la **Chakana**, el **Warmi Pachakuti** y el poder de recordar desde el cuerpo.
 
 ---
 
-> “La Chakana nos recuerda que somos puente entre mundos, y que el camino espiritual comienza en nosotras.” — Mujer Chakana
+> “La Chakana nos recuerda que somos puente entre mundos, y que el camino espiritual comienza en nosotras.” — _Mujer Chakana_
