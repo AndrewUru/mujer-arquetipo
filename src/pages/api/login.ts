@@ -38,7 +38,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: "https://mujer-chakana.vercel.app/",
+      emailRedirectTo: "https://mujer-chakana.vercel.app/dashboard",
     },
   });
 
