@@ -1,59 +1,138 @@
 ---
-// Importamos el cliente de Supabase
 import Layout from '../layouts/Layout.astro'
-import { supabase } from '../lib/supabaseClient'
-import { getArquetipoPorDia } from '../lib/getArquetipo'
-
-// 1. Función para calcular el día del ciclo (hoy - fechaInicio)
-function calcularDiaCiclo(fechaInicio: Date): number {
-  const hoy = new Date()
-  const diffTime = hoy.getTime() - fechaInicio.getTime()
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) // milisegundos a días
-  return ((diffDays % 28) + 1) // Día del 1 al 28
-}
-
-// 2. Simulamos una fecha de inicio fija (puedes cambiarla o hacerla configurable)
-const fechaInicio = new Date('2025-04-08')
-const diaCiclo = calcularDiaCiclo(fechaInicio)
-const arquetipo = await getArquetipoPorDia(diaCiclo)
 ---
 
-<Layout><html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Mujer Arquetipo</title>
-  </head>
-  <body class="p-6 text-xl text-center">
-    <script type="module">
-  import { supabase } from '/src/lib/supabaseClient.ts'
+<Layout>
+  <div id="contenido" class="p-6 max-w-xl mx-auto text-center font-sans bg-pink-50 text-pink-900 min-h-screen">
+    <h1 class="text-3xl font-bold mb-2">Cargando...</h1>
+    <p class="text-lg mb-6">Espéranos un momento ✨</p>
+  </div>
 
-  const { data: { session } } = await supabase.auth.getSession()
-  const user = session?.user
+  <script type="module">
+    import { supabase } from '/src/lib/supabaseClient.ts'
 
-  if (user) {
-    const { data: perfil } = await supabase
-      .from('perfiles')
-      .select('fecha_inicio')
-      .eq('id', user.id)
-      .single()
+    const contenido = document.getElementById('contenido')
 
-    if (!perfil?.fecha_inicio) {
-      window.location.href = '/setup'
+    async function cargarDashboard() {
+      const { data: { session }, error } = await supabase.auth.getSession()
+
+      if (!session?.user) {
+        contenido.innerHTML = `
+          <h1 class="text-3xl font-bold text-red-600">Error de sesión</h1>
+          <p>Por favor, inicia sesión nuevamente.</p>
+        `
+        return
+      }
+
+      const user = session.user
+      const { data: perfil, error: errorPerfil } = await supabase
+        .from('perfiles')
+        .select('fecha_inicio')
+        .eq('id', user.id)
+        .single()
+
+      if (!perfil?.fecha_inicio) {
+        contenido.innerHTML = `
+          <h1 class="text-2xl font-bold mb-4">Hola, <span class="text-pink-700">${user.email}</span></h1>
+          <div class="bg-yellow-100 border border-yellow-400 p-4 rounded-xl text-yellow-800">
+            ✨ Aún no has configurado tu ciclo.
+            <br /><br />
+            <a href="/setup" class="bg-pink-700 text-white px-4 py-2 rounded-lg hover:bg-pink-800 inline-block">
+              Configurar ahora
+            </a>
+          </div>
+        `
+        return
+      }
+
+      const fechaInicio = new Date(perfil.fecha_inicio)
+      const hoy = new Date()
+      const diffTime = hoy.getTime() - fechaInicio.getTime()
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+      const diaCiclo = (diffDays % 28) + 1
+
+      const { data: contenidoDia, error: errorContenido } = await supabase
+        .from('mujer_chakana')
+        .select('*')
+        .eq('dia_ciclo', diaCiclo)
+        .single()
+
+      contenido.innerHTML = `
+        <h1 class="text-3xl font-bold mb-2">Hola, <span class="text-pink-700">${user.email}</span></h1>
+        <p class="text-lg mb-6">Estás en el <strong>día ${diaCiclo}</strong> de tu ciclo de 28 días.</p>
+
+        ${contenidoDia ? `
+          <div class="bg-pink-100 rounded-xl p-4 shadow-md mb-6 text-left">
+            <h2 class="text-2xl font-semibold mb-1">🌕 Día ${contenidoDia.dia_ciclo} · ${contenidoDia.arquetipo}</h2>
+            <p class="text-pink-800 mb-2">${contenidoDia.descripcion}</p>
+            <p class="text-sm mb-1"><strong>Elemento:</strong> ${contenidoDia.elemento}</p>
+            <p class="text-sm mb-2"><strong>Tip del día:</strong> ${contenidoDia.tip_extra}</p>
+
+            ${contenidoDia.audio_url ? `
+              <audio controls class="w-full mt-2 mb-2">
+                <source src="${contenidoDia.audio_url}" type="audio/mpeg">
+                Tu navegador no soporta audio HTML5.
+              </audio>` : ''}
+
+            ${contenidoDia.ritual_pdf ? `
+              <a href="${contenidoDia.ritual_pdf}" target="_blank"
+                class="mt-2 inline-block text-pink-700 underline text-sm">
+                📜 Ver ritual del día
+              </a>` : ''}
+          </div>` : `
+          <p class="text-gray-600 mb-6">No se encontró contenido para este día.</p>`}
+
+        <div class="grid grid-cols-7 gap-2 text-sm text-gray-800 mb-8">
+          ${Array.from({ length: 28 }, (_, i) => `
+            <div class="p-2 rounded-full ${i + 1 === diaCiclo ? 'bg-pink-700 text-white font-bold' : 'bg-pink-200'}">
+              ${i + 1}
+            </div>
+          `).join('')}
+        </div>
+
+        <form id="form-nota" class="text-left space-y-4 mb-10">
+          <label for="nota" class="block text-sm font-medium text-pink-800">
+            ✍️ ¿Qué sentiste hoy?
+          </label>
+          <textarea id="nota" name="nota" rows="4"
+            class="w-full p-3 border border-pink-300 rounded-lg shadow-sm"
+            placeholder="Escribe una nota personal sobre este día..."></textarea>
+          <button type="submit" class="bg-pink-700 text-white px-4 py-2 rounded-lg hover:bg-pink-800">
+            Guardar nota
+          </button>
+          <p id="mensaje-nota" class="text-green-700 font-medium"></p>
+        </form>
+
+        <a href="/setup" class="text-sm text-pink-600 underline">Cambiar fecha de inicio</a>
+      `
+
+      // Guardar nota
+      const form = document.getElementById('form-nota')
+      const nota = document.getElementById('nota')
+      const mensaje = document.getElementById('mensaje-nota')
+
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault()
+
+        const { error } = await supabase
+          .from('notas')
+          .upsert({
+            usuario_id: user.id,
+            dia_ciclo: diaCiclo,
+            texto: nota.value,
+            fecha: new Date().toISOString()
+          })
+
+        if (error) {
+          mensaje.textContent = 'Hubo un error al guardar la nota.'
+          console.error(error)
+        } else {
+          mensaje.textContent = 'Nota guardada correctamente ✨'
+          nota.value = ''
+        }
+      })
     }
-  }
-</script>
 
-    <h1 class="text-pink-700 font-bold">¡Sesión iniciada!</h1>
-    <p>Estás en el día <strong>{diaCiclo}</strong> de tu ciclo.</p>
-
-    {arquetipo ? (
-      <>
-        <h2><strong>Arquetipo: {arquetipo.nombre}</strong></h2>
-        <p>{arquetipo.descripcion}</p>
-      </>
-    ) : (
-      <p>No se encontró un arquetipo para este día.</p>
-    )}
-  </body>
-</html>
+    cargarDashboard()
+  </script>
 </Layout>

@@ -1,30 +1,37 @@
 ---
-let mensaje = Astro.url.searchParams.get('msg')
 import Layout from '../layouts/Layout.astro'
+
+const url = new URL(Astro.request.url)
+const msg = url.searchParams.get("msg")
 ---
+
 <Layout>
-<html lang="es">
-  <head>
-    <title>Login | Mujer Arquetipo</title>
-  </head>
-  <body class="flex justify-center items-center min-h-screen bg-pink-100">
-    <form action="/api/login" method="POST" class="bg-white p-6 rounded shadow-md w-full max-w-sm">
-      <h1 class="text-2xl font-bold mb-4 text-pink-700">Iniciar sesión</h1>
-      <input
-        type="email"
-        name="email"
-        placeholder="Tu correo"
-        required
-        class="w-full p-2 border rounded mb-4"
-      />
-      <button
-        type="submit"
-        class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded"
-      >
-        Enviar enlace mágico
+  <section class="max-w-md mx-auto mt-20 p-6 bg-white rounded-xl shadow-lg text-center">
+    <h1 class="text-2xl font-bold text-pink-700 mb-4">Iniciar sesión o registrarse</h1>
+
+    <p class="text-sm text-gray-500 mb-4">
+      Puedes ingresar solo con tu correo (enlace mágico), o con contraseña si ya tienes una.
+    </p>
+
+    <form action="/api/login" method="POST" class="space-y-4">
+      <input type="email" name="email" required placeholder="Tu correo"
+        class="w-full p-3 border rounded-lg border-pink-300 focus:outline-none" />
+      
+      <input type="password" name="password" placeholder="Contraseña (opcional)"
+        class="w-full p-3 border rounded-lg border-pink-300 focus:outline-none" />
+
+      <button type="submit"
+        class="w-full bg-pink-600 text-white py-2 rounded-lg hover:bg-pink-700">
+        Ingresar / Registrarse
       </button>
-      {mensaje && <p class="mt-4 text-sm text-gray-700">{mensaje}</p>}
     </form>
-  </body>
-</html>
+
+    {msg &&
+      <p class="mt-4 text-pink-700 text-sm">
+        {decodeURIComponent(msg)}
+      </p>
+    }
+
+    <a href="/" class="text-sm text-pink-500 mt-6 block hover:underline">← Volver al inicio</a>
+  </section>
 </Layout>
