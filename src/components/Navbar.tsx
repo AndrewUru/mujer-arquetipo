@@ -1,6 +1,6 @@
 import { Home, CalendarDays, Settings, LogIn, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "../scripts/supabaseClient";
 
 export default function Navbar() {
   const [loggedIn, setLoggedIn] = useState(false);
