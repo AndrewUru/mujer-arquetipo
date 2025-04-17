@@ -8,16 +8,13 @@ import Layout from '../layouts/Layout.astro'
     <p class="text-lg mb-6">Espéranos un momento ✨</p>
   </div>
 
-  <script type="module">
-    import { supabase } from "../../lib/supabaseClient";
+<script type="module">
+  import { supabase } from "/scripts/supabaseClient.js";
 
+  const contenido = document.getElementById('contenido');
 
-
-
-    const contenido = document.getElementById('contenido')
-
-    async function cargarDashboard() {
-      const { data: { session }, error } = await supabase.auth.getSession()
+  async function cargarDashboard() {
+    const { data: { session }, error } = await supabase.auth.getSession();
 
       if (!session?.user) {
         contenido.innerHTML = `
