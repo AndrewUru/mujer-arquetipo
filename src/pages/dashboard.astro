@@ -86,7 +86,8 @@ if (!session?.user) {
 
 
 <Layout>
-  <div class="p-6 max-w-xl mx-auto text-center font-sans bg-pink-50 text-pink-900 min-h-screen">
-    <div class="prose max-w-none" set:html={contenidoHtml}></div>
-  </div>
+ <div class="p-6 max-w-xl mx-auto text-center font-sans bg-pink-50 text-pink-900 min-h-screen">
+  <div set:html={contenidoHtml}></div>
+</div>
+
 </Layout>
