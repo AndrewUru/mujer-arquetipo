@@ -1,3 +1,7 @@
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient("your-supabase-url", "your-supabase-anon-key");
+
 export async function getArquetipoPorDia(dia: number) {
   const { data, error } = await supabase
     .from("mujer_chakana")
