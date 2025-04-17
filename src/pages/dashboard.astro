@@ -1,7 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro'
-import { supabase } from '../lib/supabaseClient'
-
 ---
 
 <Layout>
@@ -11,7 +9,8 @@ import { supabase } from '../lib/supabaseClient'
   </div>
 
   <script type="module">
-    import { supabase } from '/src/lib/supabaseClient.ts'
+    import { supabase } from '@/lib/supabaseClient'
+
 
     const contenido = document.getElementById('contenido')
 
